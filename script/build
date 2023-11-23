@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 set -ex
 
+npm install
+
 rm -rf ./dist
-./node_modules/.bin/tsc
+
+# ./node_modules/.bin/tsc
+./node_modules/.bin/tsup
+
+# This isn't a great test, as it doesn't involve the export map.
+node -e "console.log(require('./dist/index').generateConfig())"
+node -e "import('./dist/index.mjs').then((m) => console.log(m.generateConfig()))"
+
+./node_modules/.bin/attw --pack
