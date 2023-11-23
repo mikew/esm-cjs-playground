@@ -1,0 +1,19 @@
+{
+  "name": "downstream-package",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cjs-test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esm-cjs-playground": "file:../"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.4",
+    "tsx": "^4.4.0"
+  }
+}

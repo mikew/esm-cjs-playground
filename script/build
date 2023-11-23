@@ -8,8 +8,13 @@ rm -rf ./dist
 # ./node_modules/.bin/tsc
 ./node_modules/.bin/tsup
 
-# This isn't a great test, as it doesn't involve the export map.
-node -e "console.log(require('./dist/index').generateConfig())"
-node -e "import('./dist/index.mjs').then((m) => console.log(m.generateConfig()))"
+pushd downstream-package
+  npm install
+  ./node_modules/.bin/tsx cjs-test.ts
+  ./node_modules/.bin/tsx esm-test.mts
+
+  # Test types
+  ../node_modules/.bin/tsc --noEmit
+popd
 
 ./node_modules/.bin/attw --pack
