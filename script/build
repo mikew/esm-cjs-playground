@@ -10,11 +10,12 @@ rm -rf ./dist
 
 pushd downstream-package
   npm install
-  ./node_modules/.bin/tsx cjs-test.ts
-  ./node_modules/.bin/tsx esm-test.mts
 
   # Test types
-  ../node_modules/.bin/tsc --noEmit
+  ../node_modules/.bin/tsc
+
+  node ./dist/cjs-test.js
+  node ./dist/esm-test.mjs
 popd
 
 ./node_modules/.bin/attw --pack
