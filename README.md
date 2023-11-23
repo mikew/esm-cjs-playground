@@ -8,3 +8,11 @@ Goals:
 - ESM has `.mjs` and lives in `./dist/esm`
 - `package.json` has as few export maps as possible, so you don't have to
   constantly add to it when adding new files.
+
+## Testing
+
+This builds the project and runs a series of tests:
+
+```sh
+./script/build
+```
