@@ -41,6 +41,8 @@ export const tsup: Options = {
   target: 'es2020',
 
   esbuildPlugins: [
+    // This plugin probably changes the meaning of some of the word vomit above,
+    // I haven't tested every permutation yet.
     rewriteImportsPlugin({
       esmExtension: '.mjs',
       cjsExtension: '',
