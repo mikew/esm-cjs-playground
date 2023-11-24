@@ -44,7 +44,7 @@ export const tsup: Options = {
     // This plugin probably changes the meaning of some of the word vomit above,
     // I haven't tested every permutation yet.
     // This isn't needed if you're comfortable with the magical incantation
-    // above.
+    // above, plus this plugin chokes when using tsconfig paths.
     rewriteImportsPlugin({
       esmExtension: '.mjs',
       cjsExtension: '',
