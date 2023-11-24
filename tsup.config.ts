@@ -43,6 +43,8 @@ export const tsup: Options = {
   esbuildPlugins: [
     // This plugin probably changes the meaning of some of the word vomit above,
     // I haven't tested every permutation yet.
+    // This isn't needed if you're comfortable with the magical incantation
+    // above.
     rewriteImportsPlugin({
       esmExtension: '.mjs',
       cjsExtension: '',
@@ -109,7 +111,7 @@ function rewriteImportsPlugin(options: {
             if (
               fs.existsSync(path.join(args.resolveDir, `${args.path}${ext}`))
             ) {
-              exactMatch = `${args.path}${desiredExtension}`
+              exactMatch = `${args.path}${ext}`
               break
             }
           }
