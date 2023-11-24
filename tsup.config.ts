@@ -1,5 +1,4 @@
 import type { Options } from 'tsup'
-import { esbuildPluginFilePathExtensions } from 'esbuild-plugin-file-path-extensions'
 
 export const tsup: Options = {
   entry: ['src/**/*.ts'],
@@ -41,5 +40,87 @@ export const tsup: Options = {
   watch: false,
   target: 'es2020',
 
-  esbuildPlugins: [esbuildPluginFilePathExtensions()],
+  esbuildPlugins: [
+    rewriteImportsPlugin({
+      esmExtension: '.mjs',
+      cjsExtension: '',
+    }),
+  ],
+}
+
+import fs from 'fs'
+import path from 'path'
+import type { Plugin } from 'esbuild'
+import type { Format } from 'tsup'
+
+const VALID_IMPORT_EXTENSIONS = [
+  '.js',
+  '.jsx',
+  '.cjs',
+  '.cjsx',
+  '.mjs',
+  '.mjsx',
+
+  '.ts',
+  '.tsx',
+  '.cts',
+  '.ctsx',
+  '.mts',
+  '.mtsx',
+]
+
+function rewriteImportsPlugin(options: {
+  esmExtension: string
+  cjsExtension: string
+}) {
+  const plugin: Plugin = {
+    name: 'add-mjs',
+    setup(build) {
+      const currentBuildFormat: Format | null =
+        build.initialOptions.define?.TSUP_FORMAT === '"cjs"'
+          ? 'cjs'
+          : build.initialOptions.define?.TSUP_FORMAT === '"esm"'
+            ? 'esm'
+            : null
+
+      if (currentBuildFormat == null) {
+        return
+      }
+
+      build.onResolve({ filter: /.*/ }, (args) => {
+        if (args.kind === 'import-statement') {
+          const desiredExtension =
+            currentBuildFormat === 'cjs'
+              ? options.cjsExtension
+              : currentBuildFormat === 'esm'
+                ? options.esmExtension
+                : null
+
+          if (desiredExtension == null) {
+            return
+          }
+
+          let finalName = `${args.path}${desiredExtension}`
+          let exactMatch: string | null = null
+
+          for (const ext of VALID_IMPORT_EXTENSIONS) {
+            if (
+              fs.existsSync(path.join(args.resolveDir, `${args.path}${ext}`))
+            ) {
+              exactMatch = `${args.path}${desiredExtension}`
+              break
+            }
+          }
+
+          if (!exactMatch) {
+            finalName = `${args.path}/index${desiredExtension}`
+          }
+
+          return { path: finalName, external: true }
+        }
+      })
+    },
+  }
+
+  return plugin
 }
