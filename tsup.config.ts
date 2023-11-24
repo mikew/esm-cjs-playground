@@ -1,4 +1,5 @@
 import type { Options } from 'tsup'
+import { esbuildPluginFilePathExtensions } from 'esbuild-plugin-file-path-extensions'
 
 export const tsup: Options = {
   entry: ['src/**/*.ts'],
@@ -39,4 +40,6 @@ export const tsup: Options = {
   skipNodeModulesBundle: true,
   watch: false,
   target: 'es2020',
+
+  esbuildPlugins: [esbuildPluginFilePathExtensions()],
 }
