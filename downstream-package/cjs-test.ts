@@ -1,4 +1,4 @@
-const { generateConfig } = require('esm-cjs-playground')
+const generateConfig = require('esm-cjs-playground')
 const { add } = require('esm-cjs-playground/math')
 
 console.log(generateConfig())
