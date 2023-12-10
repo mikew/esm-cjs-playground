@@ -1,45 +1,16 @@
-import type { Options } from 'tsup'
+import { defineConfig, type Options } from 'tsup'
 
-export const tsup: Options = {
-  entry: ['src/**/*.ts'],
-  outDir: 'dist',
-  format: ['cjs', 'esm'],
-
-  // BS package authors shouldn't really have to worry about:
-  // downstream-packages 100% works with this set to false, but attw blows up
-  // with https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/FalseExportDefault
-  // Actually, `cjsInterop: true` seems to work around that.
-  splitting: true,
-  // Without this, tsup builds .mjs files that import without an extension, thus
-  // not working in downstream-project.
-  // I don't want to use it as it creates files out of the blue with
-  // `splitting: true`, and with `splitting: false` it doubles up code by
-  // inlining imports.
+const sharedOptions: Options = {
+  entry: ['src'],
+  splitting: false,
   bundle: true,
-  // Fix for attw warning `🤨 CJS default export`.
-  cjsInterop: true,
-
-  // So, the magical incantation of building a CJS + ESM combo from a directory
-  // of TypeScript files, a process that has worked for most of a decade, seems
-  // to be:
-  // So tsup generates valid code:
-  // bundle: true,
-  // So tsup doesn't double up code by inlining imports that still exist as
-  // separate files:
-  // splitting: true,
-  // So attw doesn't flip it's lid:
-  // cjsInterop: true,
-
-  dts: true,
-
-  // `rm -rf` ain't hard.
+  sourcemap: false,
   clean: false,
-
-  minify: false,
-  skipNodeModulesBundle: true,
-  watch: false,
-  target: 'es2020',
-
+  // target: 'node12',
+  platform: 'node',
+  // shims: true,
+  dts: true,
+  cjsInterop: true,
   esbuildPlugins: [
     // This plugin probably changes the meaning of some of the word vomit above,
     // I haven't tested every permutation yet.
@@ -51,6 +22,21 @@ export const tsup: Options = {
     }),
   ],
 }
+
+export default defineConfig([
+  {
+    format: 'esm',
+    outDir: 'dist/esm',
+    target: 'node20',
+    ...sharedOptions,
+  },
+  {
+    format: 'cjs',
+    outDir: 'dist/cjs',
+    target: 'node12',
+    ...sharedOptions,
+  },
+])
 
 import fs from 'fs'
 import path from 'path'
@@ -93,6 +79,10 @@ function rewriteImportsPlugin(options: {
 
       build.onResolve({ filter: /.*/ }, (args) => {
         if (args.kind === 'import-statement') {
+          if (!args.path.match(/(^#|\.\/)/)) {
+            return
+          }
+
           const desiredExtension =
             currentBuildFormat === 'cjs'
               ? options.cjsExtension

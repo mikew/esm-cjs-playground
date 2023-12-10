@@ -2,16 +2,16 @@
   "name": "esm-cjs-playground",
   "version": "1.0.0",
   "description": "Goals:",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.mjs",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.js"
     },
     "./*": {
-      "import": "./dist/*.mjs",
-      "require": "./dist/*.js"
+      "import": "./dist/esm/*.mjs",
+      "require": "./dist/cjs/*.js"
     }
   },
   "scripts": {
